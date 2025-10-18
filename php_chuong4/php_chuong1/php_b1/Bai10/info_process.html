@@ -1,8 +1,0 @@
-<?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-$name = htmlspecialchars(trim($_POST['name'] ?? ''));
-$email = htmlspecialchars(trim($_POST['email'] ?? ''));
-$phone = htmlspecialchars(trim($_POST['phone'] ?? ''));
-echo "Name: $hoten<br>Email: $email<br>Phone: $phone";
-} else echo "Must be sent via POST..";
-?>
