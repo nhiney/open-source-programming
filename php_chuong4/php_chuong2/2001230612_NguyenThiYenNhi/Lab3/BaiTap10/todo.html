@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <title>Bài 10 – To-do List (PHP + JSON)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1> To-do list</h1>
+  <form id="form">
+    <input id="title" type="text" placeholder="Nhập việc cần làm..." required />
+    <button class="add" type="submit">Thêm</button>
+  </form>
+
+  <ul id="list"></ul>
+  <div class="muted" id="status"></div>
+
+  <script>
+    const API = 'todo.php';
+    const list = document.getElementById('list');
+    const form = document.getElementById('form');
+    const title = document.getElementById('title');
+    const statusEl = document.getElementById('status');
+
+    function setStatus(msg){ statusEl.textContent = msg || ''; }
+
+    async function fetchTodos(){
+      const res = await fetch(API);
+      const json = await res.json();
+      render(json.data || []);
+    }
+
+    function render(items){
+      list.innerHTML = '';
+      items.forEach(t=>{
+        const li = document.createElement('li');
+        const left = document.createElement('div');
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.checked = !!t.done;
+        const span = document.createElement('span');
+        span.textContent = t.title;
+        span.className = 'title' + (t.done ? ' done' : '');
+        left.style.display = 'flex'; left.style.gap='10px'; left.style.alignItems='center';
+        left.append(chk, span);
+
+        const del = document.createElement('button');
+        del.textContent = 'Xoá';
+        del.onclick = async () => {
+          await fetch(API, {method:'POST', body: JSON.stringify({action:'delete', id: t.id})});
+          setStatus('Đã xoá.');
+          fetchTodos();
+        };
+
+        chk.onchange = async () => {
+          await fetch(API, {method:'POST', body: JSON.stringify({action:'toggle', id: t.id})});
+          fetchTodos();
+        };
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        actions.append(del);
+        li.append(left, actions);
+        list.append(li);
+      });
+    }
+
+    form.onsubmit = async (e)=>{
+      e.preventDefault();
+      const val = title.value.trim();
+      if(!val) return;
+      const res = await fetch(API, {method:'POST', body: JSON.stringify({action:'add', title: val})});
+      const json = await res.json();
+      if (json.ok) { title.value=''; setStatus('Đã thêm.'); render(json.data); }
+      else setStatus(json.error || 'Lỗi');
+    };
+
+    fetchTodos();
+  </script>
+</body>
+</html>

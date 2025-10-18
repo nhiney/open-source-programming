@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bài 07 - Library</title>
+</head>
+<body>
+    <h2>Thêm sách hoặc ebook</h2>
+    <form method="post" action="library.php">
+        Title: <input type="text" name="title" required><br>
+        Author: <input type="text" name="author" required><br>
+        Price: <input type="number" name="price" required><br>
+        Loại:
+        <select name="type" onchange="toggleFileSize(this.value)">
+            <option value="book">Book</option>
+            <option value="ebook">Ebook</option>
+        </select><br>
+        <div id="fileSizeField" style="display:none;">
+            File Size (MB): <input type="number" name="fileSize"><br>
+        </div>
+        <button type="submit">Thêm</button>
+    </form>
+
+    <script>
+        function toggleFileSize(val) {
+            document.getElementById('fileSizeField').style.display = val === 'ebook' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>
